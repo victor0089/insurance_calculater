@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insurance Rate Calculator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Car Insurance Rate Calculator</h1>
+    <form id="insurance-form">
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required><br><br>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select><br><br>
+
+        <label for="car_model">Car Model:</label>
+        <input type="text" id="car_model" name="car_model" required><br><br>
+
+        <label for="coverage_type">Coverage Type:</label>
+        <select id="coverage_type" name="coverage_type" required>
+            <option value="liability">Liability</option>
+            <option value="comprehensive">Comprehensive</option>
+        </select><br><br>
+
+        <input type="submit" value="Calculate">
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('insurance-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateInsurance();
+        });
+
+        function calculateInsurance() {
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const carModel = document.getElementById('car_model').value;
+            const coverageType = document.getElementById('coverage_type').value;
+
+            fetch('/calculate', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    'age': age,
+                    'gender': gender,
+                    'car_model': carModel,
+                    'coverage_type': coverageType
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `Your car insurance rate is: $${data.insurance_rate.toFixed(2)}`;
+            })
+            .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>
